@@ -12,7 +12,7 @@
 <div ng-controller="AppCtrl" layout="column" style="height:500px;">
     <section layout="row" flex>
         <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left"
-                    md-is-locked-open="$mdMedia('gt-md')">
+                    md-is-locked-open="$mdMedia('min-width: 250px')"><!-- gt-md -->
             <md-toolbar class="md-theme-indigo">
                 <h1 class="md-toolbar-tools">Filters</h1>
             </md-toolbar>
@@ -34,7 +34,7 @@
                     <ui-select multiple ng-model="filter.sensors" theme="select2"
                                ng-disabled="disabled"
                                on-select="submit()"
-                               on-remove="submit()" style="width: 250px;">
+                               on-remove="submit()" style="min-width: 250px;">
                         <ui-select-match placeholder="Select sensors...">{{$item}}</ui-select-match>
                         <ui-select-choices repeat="sensorName in sensorNames | filter:$select.search">
                             {{sensorName}}
@@ -45,7 +45,7 @@
                     <ui-select multiple ng-model="filter.parameters" theme="select2"
                                ng-disabled="disabled"
                                on-select="submit()"
-                               on-remove="submit()" style="width: 250px;">
+                               on-remove="submit()" style="min-width: 250px;">
                         <ui-select-match placeholder="Select parameters...">{{$item}}</ui-select-match>
                         <ui-select-choices repeat="param in parameters | filter:$select.search">
                             {{param}}

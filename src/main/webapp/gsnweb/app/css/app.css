@@ -129,3 +129,9 @@ ul.specs dt {
 h1 {
   border-bottom: 1px solid gray;
 }
+
+.filter_panel {
+	width: 265px !important;
+    min-width: 265px !important;
+    max-width: 265px !important;
+}

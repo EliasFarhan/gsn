@@ -150,7 +150,7 @@ gsnMap.controller("GoogleMapsController", ["$scope", '$http', 'leafletData', '$c
             var sensorName = feature.properties.sensorName;
 
             //var html = '<div><b>{{sensorName}}</b><br><a href="#/plot?sensors={{sensorName}}&parameters={{parameters}}" my-refresh>Plot</a></div>';
-            var html = '<div><b>{{sensorName}}</b><p>Parameters</p><ul><li ng-repeat="param in parameters">{{param}}</li></ul><br><md-button class="md-raised" ng-click="plot(feature);">Plot</md-button></div>';
+            var html = '<div><b>{{sensorName}}</b><p>Parameters</p><ul><li ng-repeat="param in parameters">{{param}}</li></ul><br><md-button class="md-raised md-primary" ng-click="plot(feature);">Plot</md-button></div>';
 
             var newScope = $scope.$new();
             newScope.sensorName = sensorName;

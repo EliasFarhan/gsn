@@ -9,11 +9,11 @@
                 <div flex="100">
 
                     <div>
-                        <md-button class="md-raised" ng-click="addSensor();">
-                            Add Sensor
+                        <md-button class="md-raised md-primary" ng-click="addSensor();">
+                            Add Sensor 
                         </md-button>
                     </div>
-                    <div ng-repeat="sensor in sensorsWithParameters" layout="row" style="margin-bottom: 4px">
+                    <div ng-repeat="sensor in sensorsWithParameters" layout="column" style="margin-bottom: 4px">
 
                             <div>
                                 <md-button class="md-icon-button md-primary" ng-click="removeSensor($index)" aria-label="Remove"
@@ -30,6 +30,7 @@
                                            style="min-width: 300px;">
                                     <ui-select-match placeholder="Select Sensor...">{{$select.selected}}
                                     </ui-select-match>
+                                    
                                     <ui-select-choices
                                             repeat="sensor in sensorNames | filter:$select.search">
                                         <span ng-bind-html="sensor | highlight: $select.search"></span>
@@ -37,7 +38,7 @@
                                     </ui-select-choices>
                                 </ui-select>
                             </div>
-
+							<div></div>
                             <div  ng-disabled="!sensor.sensorSelected" style="margin-left: 5px; margin-right: 5px">
                                 <ui-select multiple ng-model="sensor.parameters.selectedFields" theme="select2"
                                            ng-disabled="disabled"
@@ -145,10 +146,10 @@
                     <md-content>
                         <section layout="row" layout-sm="column" layout-align="left center">
                             <!--<button type="submit" ng-click="submitSelected();">Update Plot</button>-->
-                            <md-button class="md-raised" ng-click="submitSelected();" ng-disabled="!plotAvailable">
+                            <md-button class="md-raised md-primary" ng-click="submitSelected();" ng-disabled="!plotAvailable">
                                 Update Plot
                             </md-button>
-                            <md-button class="md-raised"
+                            <md-button class="md-raised md-primary"
                                        ng-click="download();" ng-disabled="!plotAvailable">
                                 Download
                             </md-button>

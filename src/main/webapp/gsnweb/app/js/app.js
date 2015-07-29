@@ -74,13 +74,14 @@ gsnWebApp.controller('TabsCtrl', function ($scope, $location) {
 
     $scope.selectedTab = $scope.tabs[0];
     $scope.setSelectedTab = function (tab) {
+    	console.log(tab);
         $scope.selectedTab = tab;
     };
 
     $scope.tabClass = function (tab) {
-        //if ($scope.selectedTab == tab)
-        //    return 'active';
-        //else
+        if ($scope.selectedTab == tab)
+            return 'active';
+        else
         return '';
 
     }

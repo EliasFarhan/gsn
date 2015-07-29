@@ -14,7 +14,7 @@
 
   <link rel="stylesheet" href="css/app.css">
 
-  <link rel="stylesheet" href="bower_components/angular-material/angular-material.css">
+  <link rel="stylesheet" href="bower_components/angular-material/angular-material.min.css">
 
   <script src="bower_components/angular/angular.js"></script>
   <script src="bower_components/angular-route/angular-route.js"></script>
@@ -82,11 +82,16 @@
   <script src="js/sensors.js"></script>
   <script src="js/map/mapControllers.js"></script>
 </head>
-<body>
-<h1>GSN</h1>
+<body style="background-image:url(img/CCES.jpg); background-repeat: no-repeat;">
+
+<div id="header">
+<h1>Environmental Data Portal<br/>
+<small><i>Global Sensor Network</i></small></h1>
+</div>
+
 <ul class="nav nav-tabs" ng-controller="TabsCtrl">
 
-  <li ng-class="tabClass(tab)" ng-repeat="tab in tabs" tab="tab"><a href="{{tab.link}}" ng-click="setSelectedTab(tab)">{{tab.label}}</a></li>
+  <li ng-class="" ng-repeat="tab in tabs" tab="tab"><a href="{{tab.link}}" ng-class="tabClass(tab)" ng-click="setSelectedTab(tab)">{{tab.label}}</a></li>
 </ul>
   <div ng-view></div>
 

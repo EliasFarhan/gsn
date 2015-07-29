@@ -23,14 +23,12 @@
                                 </md-button>
 
                             </div>
-
                             <div>
                                 <ui-select ng-model="sensor.selectedSensor" theme="select2" ng-disabled="disabled"
                                            on-select="updateSensor($item, $index)"
                                            style="min-width: 300px;">
                                     <ui-select-match placeholder="Select Sensor...">{{$select.selected}}
                                     </ui-select-match>
-                                    
                                     <ui-select-choices
                                             repeat="sensor in sensorNames | filter:$select.search">
                                         <span ng-bind-html="sensor | highlight: $select.search"></span>
@@ -38,7 +36,6 @@
                                     </ui-select-choices>
                                 </ui-select>
                             </div>
-							<div></div>
                             <div  ng-disabled="!sensor.sensorSelected" style="margin-left: 5px; margin-right: 5px">
                                 <ui-select multiple ng-model="sensor.parameters.selectedFields" theme="select2"
                                            ng-disabled="disabled"
@@ -69,7 +66,7 @@
                         <div append-source>
                             <!--<form name="datepickerForm" class="form-inline" role="form">-->
                             <!-- Date range example -->
-                            <div layout="column" layout-align="start center" layout-margin>
+                            <div layout="row" layout-align="start center" layout-margin>
 
                                 <div>
                                     <label>From</label>
@@ -169,10 +166,6 @@
             <!--</div>-->
 
         </form>
-
-    </div>
-</div>
-
 <div>
     <div ng-controller="hcCtrl">
 
@@ -249,3 +242,6 @@
 
 
 </div>
+    </div>
+</div>
+

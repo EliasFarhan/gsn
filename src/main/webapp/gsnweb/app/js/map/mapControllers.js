@@ -1,8 +1,7 @@
 var gsnMap = angular.module("gsnMap", ["leaflet-directive"]);
 
-
-gsnMap.controller("GoogleMapsController", ["$scope", '$http', 'leafletData', '$compile', '$filter', 'sensors', 'FilterParameters', 'sharedService', '$location', '_',
-    function ($scope, $http, leafletData, $compile, $filter, sensors, FilterParameters, sharedService, $location, _) {
+gsnMap.controller("GoogleMapsController", ["$scope", 'leafletData', '$compile', '$filter', 'sensors', 'FilterParameters', 'sharedService', '$location', '_', 'MapFilterParameters',
+    function ($scope, leafletData, $compile, $filter, sensors, FilterParameters, sharedService, $location, _, MapFilterParameters) {
 
 
         $scope.geojson = {};
@@ -20,21 +19,34 @@ gsnMap.controller("GoogleMapsController", ["$scope", '$http', 'leafletData', '$c
         var namesOfGroup = {};
         var parametersOfGroup = {};
 
+        var namesOfGroupPublic = {};
+        var parametersOfGroupPublic = {};
+
         for (var i = 0; i < $scope.features.length; i++) {
             var properties = $scope.features[i].properties;
             if (!(namesOfGroup[properties.group])) {
                 namesOfGroup[properties.group] = [];
                 parametersOfGroup[properties.group] = [];
+
             }
             namesOfGroup[properties.group].push(properties.sensorName);
             parametersOfGroup[properties.group] = _.union(parametersOfGroup[properties.group], properties.observed_properties);
 
-            //parametersOfGroup[properties.group].push.apply(parametersOfGroup[properties.group], properties.observed_properties);
+            if (properties.isPublic) {
+                if (!(namesOfGroupPublic[properties.group])) {
+                    namesOfGroupPublic[properties.group] = [];
+                    parametersOfGroupPublic[properties.group] = [];
+                }
+                namesOfGroupPublic[properties.group].push(properties.sensorName);
+                parametersOfGroupPublic[properties.group] = _.union(parametersOfGroup[properties.group], properties.observed_properties);
+            }
         }
 
-        $scope.groups = ['All'].concat(_.keys(namesOfGroup).sort());
-        $scope.sensorNames = [].concat.apply([], _.values(namesOfGroup).sort());
-        $scope.parameters = _.uniq([].concat.apply([], _.values(parametersOfGroup)).sort(), true);
+        function updateFilterParameters(namesOfGroup, parametersOfGroup) {
+            $scope.groups = ['All'].concat(_.keys(namesOfGroup).sort());
+            $scope.sensorNames = [].concat.apply([], _.values(namesOfGroup).sort());
+            $scope.parameters = _.uniq([].concat.apply([], _.values(parametersOfGroup)).sort(), true);
+        }
 
 
         $scope.updateGroup = function (item) {
@@ -48,6 +60,17 @@ gsnMap.controller("GoogleMapsController", ["$scope", '$http', 'leafletData', '$c
             }
             $scope.filter.sensors = [];
             updateMarkers();
+        };
+
+        $scope.changePrivacy = function () {
+            if ($scope.filter.onlyPublic) {
+                updateFilterParameters(namesOfGroupPublic, parametersOfGroupPublic);
+            } else {
+                updateFilterParameters(namesOfGroup, parametersOfGroup);
+            }
+
+            updateMarkers();
+
         };
 
         angular.extend($scope, {
@@ -71,20 +94,12 @@ gsnMap.controller("GoogleMapsController", ["$scope", '$http', 'leafletData', '$c
                     }
                 }
             }
+
         });
 
-        $scope.group = {};
+        $scope.filter = MapFilterParameters;
 
-        $scope.filter = {
-            sensors: [],
-            sensorName: {},
-            group: {},
-            deployment: '',
-            parameters: [],
-            sensorNameFeature: {}
-        };
-
-        $scope.submit = function() {
+        $scope.submit = function () {
             updateMarkers();
         };
 
@@ -94,10 +109,29 @@ gsnMap.controller("GoogleMapsController", ["$scope", '$http', 'leafletData', '$c
         function updateMarkers() {
             //var markers = L.markerClusterGroup();
 
+            var iconOpen = {
+                iconUrl: 'img/green_.png',
+                iconSize: [28, 28],
+                iconAnchor: [12, 0]
+            };
+            var iconProtected = {
+                iconUrl: 'img/red_.png',
+                iconSize: [28, 28],
+                iconAnchor: [12, 0]
+            };
+
+
             var geoJsonLayer = L.geoJson(sensors.data, {
                 onEachFeature: onEachFeature,
                 filter: function (feature, layer) {
                     return filterSensor(feature);
+                },
+                pointToLayer: function (feature, latlng) {
+                    if (feature.properties.isPublic) {
+                        return new L.marker(latlng, {icon: L.icon(iconOpen)});
+                    } else {
+                        return new L.marker(latlng, {icon: L.icon(iconProtected)});
+                    }
                 }
             });
 
@@ -106,13 +140,14 @@ gsnMap.controller("GoogleMapsController", ["$scope", '$http', 'leafletData', '$c
             $scope.currentMarkers.addLayer(geoJsonLayer);
             leafletData.getMap().then(function (map) {
                 //map.removeLayer($scope.currentMarkers);
-                map.addLayer( $scope.currentMarkers);
-                map.fitBounds( $scope.currentMarkers.getBounds());
+                map.addLayer($scope.currentMarkers);
+                map.fitBounds($scope.currentMarkers.getBounds());
             });
 
         }
 
-        updateMarkers();
+        $scope.changePrivacy();
+
 
         function filterSensor(feature) {
             var result = true;
@@ -141,28 +176,72 @@ gsnMap.controller("GoogleMapsController", ["$scope", '$http', 'leafletData', '$c
                     result = result && (feature.properties.observed_properties.indexOf($scope.filter.parameters[j]) > -1);
                 }
             }
+            if ($scope.filter.onlyPublic) {
+                result = result && feature.properties.isPublic;
+            }
 
             return result;
         }
 
+        //
+        //function onEachFeature(feature, layer) {
+        //    layer.on('click', function (e) {
+        //        var sensorName = feature.properties.sensorName;
+        //
+        //        //var html = '<div><b>{{sensorName}}</b><br><a href="#/plot?sensors={{sensorName}}&parameters={{parameters}}" my-refresh>Plot</a></div>';
+        //        //var html = '<div><b>{{sensorName}}</b><p>Parameters</p><ul><li ng-repeat="param in parameters">{{param}}</li></ul><br><md-button class="md-raised" ng-click="plot(feature);">Plot</md-button></div>';
+        //
+        //        var html = '<div><b>{{extra}}</b><p>Parameters</p><table><tr ng-repeat="param in parameters"><td>{{param.name}}</td></tr></table><ul><li ng-repeat="param in parameters">{{param}}</li></ul><br><md-button class="md-raised" ng-click="plot(feature);">Plot</md-button></div>';
+        //
+        //        LatestData.resetPromise();
+        //        LatestData.getData(sensorName).then(function (data) {
+        //            console.log(data);
+        //            var newScope = $scope.$new();
+        //            newScope.sensorName = sensorName;
+        //            newScope.feature = feature;
+        //            newScope.parameters = data.properties.fields;
+        //            newScope.values = data.properties.values;
+        //
+        //            //newScope.parameters = feature.properties.observed_properties;
+        //
+        //            var linkFunction = $compile(html)(newScope);
+        //
+        //            layer.bindPopup(linkFunction[0]);
+        //        });
+        //    });
+        //}
 
         function onEachFeature(feature, layer) {
             var sensorName = feature.properties.sensorName;
 
             //var html = '<div><b>{{sensorName}}</b><br><a href="#/plot?sensors={{sensorName}}&parameters={{parameters}}" my-refresh>Plot</a></div>';
-            var html = '<div><b>{{sensorName}}</b><p>Parameters</p><ul><li ng-repeat="param in parameters">{{param}}</li></ul><br><md-button class="md-raised md-primary" ng-click="plot(feature);">Plot</md-button></div>';
 
+            var html = '<div><b>{{sensorName}}</b></br><i>has data from {{fromDate}} to {{toDate}}</i><p>Parameters</p><ul><li ng-repeat="param in parameters">{{param}}</li></ul><br><md-button ng-disabled="protected" class="md-raised md-primary" ng-click="plot(feature);">Plot</md-button></div>';
+
+
+            //var html = '<div><b>{{extra}}</b><p>Parameters</p><table><tr ng-repeat="param in parameters"><td>{{param.name}}</td></tr></table><ul><li ng-repeat="param in parameters">{{param}}</li></ul><br><md-button class="md-raised" ng-click="plot(feature);">Plot</md-button></div>';
+
+            //LatestData.resetPromise();
+            //LatestData.getData(sensorName).then(function (data) {
             var newScope = $scope.$new();
             newScope.sensorName = sensorName;
             newScope.feature = feature;
+            newScope.protected = !feature.properties.isPublic;
+            newScope.fromDate = feature.properties.fromDate;
+            newScope.toDate = feature.properties.untilDate;
+            //newScope.parameters = data.properties.fields;
+            //newScope.values = data.properties.values;
+
             newScope.parameters = feature.properties.observed_properties;
 
             var linkFunction = $compile(html)(newScope);
 
             layer.bindPopup(linkFunction[0]);
+            //});
+
         }
 
-        $scope.plot = function(feature) {
+        $scope.plot = function (feature) {
             console.log('PLOT ' + feature.properties.sensorName);
             FilterParameters.reset();
             FilterParameters.sensors = [feature.properties.sensorName];
@@ -181,83 +260,87 @@ gsnMap.controller("GoogleMapsController", ["$scope", '$http', 'leafletData', '$c
             }
             return colNames;
         }
-        //$scope.centerJSON = function () {
-        //    leafletData.getMap().then(function (map) {
-        //        var latlngs = [];
-        //        for (var i in $scope.geojson.data.features[0].geometry.coordinates) {
-        //            var coord = $scope.geojson.data.features[0].geometry.coordinates[i];
-        //            for (var j in coord) {
-        //                var points = coord[j];
-        //                for (var k in points) {
-        //                    latlngs.push(L.GeoJSON.coordsToLatLng(points[k]));
-        //                }
-        //            }
-        //        }
-        //        map.fitBounds(latlngs);
-        //    });
-        //};
-
-    }]);
 
 
-gsnMap.directive('myRefresh',function($location,$route){
-    return function(scope, element, attrs) {
-        element.bind('click',function(){
-            if(element[0] && element[0].href && element[0].href === $location.absUrl()){
+    }
+
+])
+;
+
+
+gsnMap.directive('myRefresh', function ($location, $route) {
+    return function (scope, element, attrs) {
+        element.bind('click', function () {
+            if (element[0] && element[0].href && element[0].href === $location.absUrl()) {
                 $route.reload();
             }
         });
     }
 });
 
-gsnMap.controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $mdUtil, $log) {
-    $scope.toggleLeft = buildToggler('left');
-    $scope.toggleRight = buildToggler('right');
-    /**
-     * Build handler to open/close a SideNav; when animation finishes
-     * report completion in console
-     */
-    function buildToggler(navID) {
-        var debounceFn =  $mdUtil.debounce(function(){
-            $mdSidenav(navID)
-                .toggle()
-                .then(function () {
-                    $log.debug("toggle " + navID + " is done");
-                });
-        },300);
-        return debounceFn;
-    }
-});
-//gsnMap.controller('LeftCtrl', function ($scope, $timeout, $mdSidenav, $log) {
-        //$scope.close = function () {
-        //    $mdSidenav('left').close()
-        //        .then(function () {
-        //            $log.debug("close LEFT is done");
-        //        });
-        //};
-//    });
-//gsnMap.controller('RightCtrl', function ($scope, $timeout, $mdSidenav, $log) {
-//        $scope.close = function () {
-//            $mdSidenav('right').close()
-//                .then(function () {
-//                    $log.debug("close RIGHT is done");
-//                });
-//        };
-//    });
 
-gsnMap.factory('Sensors', ['$http', function($http) {
+gsnMap.factory('Sensors', ['$http', function ($http) {
     var sdo = {
-        getSensors: function() {
+        getSensors: function () {
             var promise = $http({
                 method: 'GET',
-                url: 'http://eflumpc18.epfl.ch/gsn/web/virtualSensors'
-                //url: 'http://localhost:8090/web/virtualSensors'
+                url: 'http://eflumpc18.epfl.ch/gsn/web/virtualSensors?onlyPublic=false'
+                //url: 'http://eflumpc18.epfl.ch/gsn/web/virtualSensors'
+                //url: 'http://localhost:8090/web/virtualSensors?onlyPublic=false'
             });
-            promise.success(function(data, status, headers, conf) {
+            promise.success(function (data, status, headers, conf) {
                 return data;
             });
             return promise;
         }
     };
     return sdo;
+}]);
+
+gsnMap.factory('LatestData', ['$http', function ($http) {
+    var promise;
+
+    var dataProcessingService = {
+        getData: function (sensorName) {
+            if (!promise) {
+
+                var url = 'http://montblanc.slf.ch:22002/ws/api/sensors/' + sensorName + '?latestValues=true';
+
+                promise = $http.get(url).then(function (response) {
+
+
+                    // The return value gets picked up by the then in the controller.
+                    //return processData(response.data, fields);
+                    return response.data;
+                });
+            }
+
+
+            // Return the promise to the controller
+            return promise;
+        },
+
+        resetPromise: function () {
+            promise = null;
+        }
+    };
+    return dataProcessingService;
+}]);
+
+
+gsnMap.factory('MapFilterParameters', [function () {
+    function MapFilterParameters() {
+
+        this.sensors = [];
+        this.sensorName = {};
+        this.group = {};
+        this.deployment = '';
+        this.parameters = [];
+        this.onlyPublic = true;
+        this.fromDate = {};
+        this.untilDate = {};
+
+    }
+
+    return new MapFilterParameters();
 }]);

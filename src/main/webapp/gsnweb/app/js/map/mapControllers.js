@@ -16,6 +16,10 @@ gsnMap.controller("GoogleMapsController", ["$scope", 'leafletData', '$compile', 
             zoom: 8
         };
 
+        //----------------------------
+        //Initialize filter parmeters
+        //----------------------------
+
         var namesOfGroup = {};
         var parametersOfGroup = {};
 
@@ -70,7 +74,6 @@ gsnMap.controller("GoogleMapsController", ["$scope", 'leafletData', '$compile', 
             }
 
             updateMarkers();
-
         };
 
         angular.extend($scope, {
@@ -180,8 +183,22 @@ gsnMap.controller("GoogleMapsController", ["$scope", 'leafletData', '$compile', 
                 result = result && feature.properties.isPublic;
             }
 
+            result = result && (feature.properties.elevation >= $scope.filter.altitude.min) &&
+            (feature.properties.elevation <= $scope.filter.altitude.max);
+
+            result = result && (feature.properties.aspect >= $scope.filter.aspect.min) &&
+            (feature.properties.aspect <= $scope.filter.aspect.max);
+
+            result = result && (feature.properties.slopeAngle >= $scope.filter.slopeAngle.min) &&
+            (feature.properties.slopeAngle <= $scope.filter.slopeAngle.max);
+
+
             return result;
         }
+
+        $scope.$on("slideEnded", function() {
+            updateMarkers();
+        });
 
         //
         //function onEachFeature(feature, layer) {
@@ -216,8 +233,9 @@ gsnMap.controller("GoogleMapsController", ["$scope", 'leafletData', '$compile', 
 
             //var html = '<div><b>{{sensorName}}</b><br><a href="#/plot?sensors={{sensorName}}&parameters={{parameters}}" my-refresh>Plot</a></div>';
 
-            var html = '<div><b>{{sensorName}}</b></br><i>has data from {{fromDate}} to {{toDate}}</i><p>Parameters</p><ul><li ng-repeat="param in parameters">{{param}}</li></ul><br><md-button ng-disabled="protected" class="md-raised md-primary" ng-click="plot(feature);">Plot</md-button></div>';
-
+            //var html = '<div><b>{{sensorName}}</b></br><i>has data from {{fromDate}} to {{toDate}}</i><br><Label>Parameters</Label><ul><li ng-repeat="param in parameters">{{param}}</li></ul><br><md-button ng-disabled="protected" class="md-raised" ng-click="plot(feature);">Plot</md-button></div>';
+            var html = '<div><b>{{sensorName}}</b></br><i>has data from {{fromDate}} to {{toDate}}</i><br/><b>Parameters: </b>{{parameterString}}<br/><ul><li><b>Elevation:</b>{{elevation}}</li>' +
+                '<li><b>Slope angle:</b>{{angle}}</li><li><b>Aspect:</b>{{aspect}}</li></ul><md-button ng-disabled="protected" class="md-raised md-primary" ng-click="plot(feature);">Plot</md-button></div>';
 
             //var html = '<div><b>{{extra}}</b><p>Parameters</p><table><tr ng-repeat="param in parameters"><td>{{param.name}}</td></tr></table><ul><li ng-repeat="param in parameters">{{param}}</li></ul><br><md-button class="md-raised" ng-click="plot(feature);">Plot</md-button></div>';
 
@@ -233,6 +251,10 @@ gsnMap.controller("GoogleMapsController", ["$scope", 'leafletData', '$compile', 
             //newScope.values = data.properties.values;
 
             newScope.parameters = feature.properties.observed_properties;
+            newScope.parameterString = feature.properties.observed_properties.join(', ');
+            newScope.elevation = feature.properties.elevation;
+            newScope.angle = feature.properties.slopeAngle;
+            newScope.aspect = feature.properties.aspect;
 
             var linkFunction = $compile(html)(newScope);
 
@@ -339,6 +361,25 @@ gsnMap.factory('MapFilterParameters', [function () {
         this.onlyPublic = true;
         this.fromDate = {};
         this.untilDate = {};
+        this.altitude = {
+            min: 0,
+            max: 4700,
+            floor:0,
+            ceil:4700
+        };
+        this.slopeAngle = {
+            min: 0,
+            max: 90,
+            floor:0,
+            ceil:90
+        };
+
+        this.aspect = {
+            min: 0,
+            max: 360,
+            floor:0,
+            ceil:360
+        }
 
     }
 

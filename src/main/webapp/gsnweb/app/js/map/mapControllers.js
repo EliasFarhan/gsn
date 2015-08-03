@@ -234,31 +234,37 @@ gsnMap.controller("GoogleMapsController", ["$scope", 'leafletData', '$compile', 
             //var html = '<div><b>{{sensorName}}</b><br><a href="#/plot?sensors={{sensorName}}&parameters={{parameters}}" my-refresh>Plot</a></div>';
 
             //var html = '<div><b>{{sensorName}}</b></br><i>has data from {{fromDate}} to {{toDate}}</i><br><Label>Parameters</Label><ul><li ng-repeat="param in parameters">{{param}}</li></ul><br><md-button ng-disabled="protected" class="md-raised" ng-click="plot(feature);">Plot</md-button></div>';
-            var html = '<div><b>{{sensorName}}</b></br><i>has data from {{fromDate}} to {{toDate}}</i><br/><b>Parameters: </b>{{parameterString}}<br/><ul><li><b>Elevation:</b>{{elevation}}</li>' +
-                '<li><b>Slope angle:</b>{{angle}}</li><li><b>Aspect:</b>{{aspect}}</li></ul><md-button ng-disabled="protected" class="md-raised md-primary" ng-click="plot(feature);">Plot</md-button></div>';
+            var html="";
+            jQuery.get("/src/main/webapp/gsnweb/app/partials/sensor_window.html", function(data) {
+            	html = data;
+            	//LatestData.resetPromise();
+                //LatestData.getData(sensorName).then(function (data) {
+                var newScope = $scope.$new();
+                newScope.sensorName = sensorName;
+                newScope.feature = feature;
+                newScope.protected = !feature.properties.isPublic;
+                newScope.fromDate = feature.properties.fromDate;
+                newScope.toDate = feature.properties.untilDate;
+                //newScope.parameters = data.properties.fields;
+                //newScope.values = data.properties.values;
+
+                newScope.parameters = feature.properties.observed_properties;
+                newScope.parameterString = feature.properties.observed_properties.join(', ');
+                newScope.elevation = feature.properties.elevation;
+                newScope.angle = feature.properties.slopeAngle;
+                newScope.aspect = feature.properties.aspect;
+
+                var linkFunction = $compile(html)(newScope);
+
+                layer.bindPopup(linkFunction[0]);
+            });
+            
+            //'<div><b>{{sensorName}}</b></br><i>has data from {{fromDate}} to {{toDate}}</i><br/><b>Parameters: </b>{{parameterString}}<br/><ul><li><b>Elevation:</b>{{elevation}}</li>' +
+            //    '<li><b>Slope angle:</b>{{angle}}</li><li><b>Aspect:</b>{{aspect}}</li></ul><md-button ng-disabled="protected" class="md-raised md-primary" ng-click="plot(feature);">Plot</md-button></div>';
 
             //var html = '<div><b>{{extra}}</b><p>Parameters</p><table><tr ng-repeat="param in parameters"><td>{{param.name}}</td></tr></table><ul><li ng-repeat="param in parameters">{{param}}</li></ul><br><md-button class="md-raised" ng-click="plot(feature);">Plot</md-button></div>';
 
-            //LatestData.resetPromise();
-            //LatestData.getData(sensorName).then(function (data) {
-            var newScope = $scope.$new();
-            newScope.sensorName = sensorName;
-            newScope.feature = feature;
-            newScope.protected = !feature.properties.isPublic;
-            newScope.fromDate = feature.properties.fromDate;
-            newScope.toDate = feature.properties.untilDate;
-            //newScope.parameters = data.properties.fields;
-            //newScope.values = data.properties.values;
-
-            newScope.parameters = feature.properties.observed_properties;
-            newScope.parameterString = feature.properties.observed_properties.join(', ');
-            newScope.elevation = feature.properties.elevation;
-            newScope.angle = feature.properties.slopeAngle;
-            newScope.aspect = feature.properties.aspect;
-
-            var linkFunction = $compile(html)(newScope);
-
-            layer.bindPopup(linkFunction[0]);
+            
             //});
 
         }

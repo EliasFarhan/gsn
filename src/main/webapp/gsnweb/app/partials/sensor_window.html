@@ -1,0 +1,14 @@
+<div>
+	<b>{{sensorName}}</b>
+	</br>
+	<i>has data from {{fromDate}} to {{toDate}}</i>
+	<br/>
+	<b>Parameters: </b>{{parameterString}}
+	<br/>
+	<ul>
+		<li><b>Elevation:</b>{{elevation}}</li>
+		<li><b>Slope angle:</b>{{angle}}</li>
+		<li><b>Aspect:</b>{{aspect}}</li>
+	</ul>
+<md-button ng-disabled="protected" class="md-raised md-primary" ng-click="plot(feature);">Plot</md-button>
+</div>

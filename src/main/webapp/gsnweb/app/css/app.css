@@ -138,8 +138,8 @@ ul.specs dt {
   color: #3949AB;
 }
 .active {
-  background-color: #3F51B5 !important;
-  color: rgba(255, 255, 255, 0.87) !important;
+  background-color: #DDD !important;
+  color: rgba(0,0,0, 0.87) !important;
 }
 .filter_panel {
   width: 265px !important;

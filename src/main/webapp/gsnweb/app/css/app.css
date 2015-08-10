@@ -151,5 +151,7 @@ h2 {
 }
 .about {
 	width: 300px;
-	text-justify: about;
+	text-align: justify;
+    text-justify: auto;
+    margin-left:10px;
 }

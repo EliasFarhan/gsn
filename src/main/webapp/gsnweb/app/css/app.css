@@ -146,3 +146,9 @@ ul.specs dt {
   min-width: 265px !important;
   max-width: 265px !important;
 }
+h2 {
+	font-size = 30px;
+}
+.about {
+	width: 300px;
+}

@@ -39,6 +39,16 @@ gsnWebApp.config(['$routeProvider', '$datepickerProvider',
                 //, controller: 'hcCtrl'
                 //, reloadOnSearch: true
             }).
+            when('/monitor', {
+                templateUrl: 'partials/monitor.html'
+                //, controller: 'hcCtrl'
+                //, reloadOnSearch: true
+            }).
+            when('/about', {
+                templateUrl: 'partials/about.html'
+                //, controller: 'hcCtrl'
+                //, reloadOnSearch: true
+            }).
             otherwise({redirectTo: '/map'});
 
         //.
@@ -70,6 +80,8 @@ gsnWebApp.controller('TabsCtrl', function ($scope, $location) {
     $scope.tabs = [
         {link: '#/map', label: 'Sensor map'},
         {link: '#/plot', label: 'Plot data'},
+        {link: '#/monitor', label: 'Monitor'},
+        {link: '#/about', label: 'About'},
     ];
 
     $scope.selectedTab = $scope.tabs[0];

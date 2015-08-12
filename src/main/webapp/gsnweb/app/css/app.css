@@ -147,11 +147,11 @@ ul.specs dt {
   max-width: 265px !important;
 }
 h2 {
-	font-size = 30px;
+  font-size: 30px;
 }
 .about {
-	width: 300px;
-	text-align: justify;
-    text-justify: auto;
-    margin-left:10px;
+  width: 300px;
+  text-align: justify;
+  text-justify: auto;
+  margin-left:10px;
 }

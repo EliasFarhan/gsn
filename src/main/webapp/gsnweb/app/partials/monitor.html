@@ -7,7 +7,7 @@
             <!--</div>-->
     <!--</form>-->
     <div>
-        <div ng:repeat="sensor in data">
+        <div ng:repeat="sensor in data" class="box_border">
             <label>{{sensor.properties.vs_name}}</label>
             <table>
                 <tr>
@@ -18,8 +18,7 @@
                 <tbody ng:repeat="field in sensor.properties.fields.slice(2, sensor.properties.fields.length)">
                 <tr>
                     <td>{{field.name}}</td>
-                    <td>{{sensor.properties.values[0][$index+2]}}</td>
-                    <td>{{field.unit}}</td>
+                    <td>{{sensor.properties.values[0][$index+2]}} {{field.unit}}</td>
                 </tr>
                 </tbody>
             </table>

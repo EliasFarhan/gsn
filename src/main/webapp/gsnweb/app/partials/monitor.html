@@ -11,14 +11,14 @@
             <label>{{sensor.properties.vs_name}}</label>
             <table>
                 <tr>
-                    <td>{{sensor.properties.fields[0].name}}</td>
-                    <td>{{sensor.properties.values[0][0] | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
+                    <td style="padding-right: 5px;">{{sensor.properties.fields[0].name}}</td>
+                    <td class="monitor_value">{{sensor.properties.values[0][0] | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
                     <td></td>
                 </tr>
                 <tbody ng:repeat="field in sensor.properties.fields.slice(2, sensor.properties.fields.length)">
                 <tr>
-                    <td>{{field.name}}</td>
-                    <td>{{sensor.properties.values[0][$index+2]}} {{field.unit}}</td>
+                    <td style="padding-right: 5px;">{{field.name}}</td>
+                    <td class="monitor_value">{{sensor.properties.values[0][$index+2]}} {{field.unit}}</td>
                 </tr>
                 </tbody>
             </table>

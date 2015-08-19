@@ -25,6 +25,7 @@ gsnMap.controller("GoogleMapsController", ["$scope", 'leafletData', '$compile', 
 
         var namesOfGroupPublic = {};
         var parametersOfGroupPublic = {};
+        var publicSensors = [];
 
         for (var i = 0; i < $scope.features.length; i++) {
             var properties = $scope.features[i].properties;
@@ -43,6 +44,7 @@ gsnMap.controller("GoogleMapsController", ["$scope", 'leafletData', '$compile', 
                 }
                 namesOfGroupPublic[properties.group].push(properties.sensorName);
                 parametersOfGroupPublic[properties.group] = _.union(parametersOfGroup[properties.group], properties.observed_properties);
+                publicSensors.push(properties.sensorName);
             }
         }
 
@@ -108,6 +110,15 @@ gsnMap.controller("GoogleMapsController", ["$scope", 'leafletData', '$compile', 
 
         $scope.submit = function () {
             updateMarkers();
+        };
+
+        $scope.getSensorIcon = function(sensorName) {
+            //if (_.contains(publicSensors, sensorName)) {
+            if (publicSensors.indexOf(sensorName) > -1) {
+                return 'img/green_.png';
+            } else {
+                return 'img/red_.png';
+            }
         };
 
         $scope.currentMarkers = L.markerClusterGroup();
@@ -356,8 +367,8 @@ gsnMap.factory('Sensors', ['$http', function ($http) {
             if (!self.promise) {
                 self.promise = $http({
                     method: 'GET',
-                    url: 'http://eflumpc18.epfl.ch/gsn/web/virtualSensors?onlyPublic=false'
-                    //url: 'http://eflumpc18.epfl.ch/gsn/web/virtualSensors'
+                    url: 'http://montblanc.slf.ch:8090/web/virtualSensors?onlyPublic=false'
+                    //url: 'http://eflumpc18.epfl.ch/gsn/web/virtualSensors?onlyPublic=false'
                     //url: 'http://localhost:8090/web/virtualSensors?onlyPublic=false'
                 });
                 self.promise.success(function (data, status, headers, conf) {

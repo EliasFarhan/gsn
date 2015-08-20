@@ -1,0 +1,51 @@
+<div layout="row" layout-sm="column" layout-margin>
+
+    <!--<form name="monitorForm">-->
+    <!--<div>-->
+    <!--Data: {{data}}-->
+
+    <!--</div>-->
+    <!--</form>-->
+    <div>
+
+        <div class="box_border">
+            <label style="margin-top: 10px;">WANNENGRAT_WAN6</label>
+
+            <table>
+                
+                <div >
+                    <tr>
+                        <td style="padding-right: 5px;">latitude</td>
+                        <td class="metadata_value">46.806238</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-right: 5px;">altitude</td>
+                        <td class="metadata_value">2434</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-right: 5px;">altitude</td>
+                        <td class="metadata_value">2434</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-right: 5px;">altitude</td>
+                        <td class="metadata_value">2434</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-right: 5px;">altitude</td>
+                        <td class="metadata_value">2434</td>
+                    </tr>
+                    </tbody>
+                </div>
+            </table>
+            <div ng-if="isImage(sensor)">
+                <img lazy-load ll-src="{{imageSrc(sensor)}}" style="height: 300px;"/>
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+
+</div>

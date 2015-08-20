@@ -58,6 +58,11 @@ gsnWebApp.config(['$routeProvider', '$datepickerProvider',
                 },
                 controller: 'MonitorController'
             }).
+            when('/metadata', {
+                templateUrl: 'partials/metadata.html'
+                //, controller: 'hcCtrl'
+                //, reloadOnSearch: true
+            }).
             when('/about', {
                 templateUrl: 'partials/about.html'
                 //, controller: 'hcCtrl'
@@ -115,10 +120,11 @@ gsnWebApp.service('GsnTabs', function () {
             {link: '#/map', label: 'Sensor map'},
             {link: '#/plot', label: 'Plot data'},
             {link: '#/monitor', label: 'Monitor'},
+            {link: '#/metadata', label: 'Metadata'},
             {link: '#/about', label: 'About'},
         ];
 
-        this.tabNames = ['/map', '/plot', '/monitor', '/about'];
+        this.tabNames = ['/map', '/plot', '/monitor', '/metadata', '/about'];
 
         this.selectedTab = this.tabs[0];
     }
